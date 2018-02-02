@@ -111,6 +111,7 @@ def write_json(student_data):
     for netID, data in student_data.items():
         allData = [item.strip() for item in data.split(',')]
 
+        # dict containing student data
         student_json = {
             'FirstName': allData[0],
             'LastName': allData[1],
@@ -119,13 +120,12 @@ def write_json(student_data):
             'TeamName': allData[4],
         }
 
-        json_version = json.dumps(student_json)
-        print()
+        json_version = json.dumps(student_json, sort_keys=False) # convert dict to json
+        json_file_path = '{}{}.json'.format(current_directory, netID) # get file path for student data
 
-        json_file_path = '{}{}.json'.format(current_directory, netID)
-
+        # write to file
         with open(json_file_path, 'w') as f:
-            f.write(json.dumps(json_version, indent=4))
+            f.write(json.dumps(json_version, indent=4, sort_keys=False))
 
 if __name__ == "__main__":
     main()
