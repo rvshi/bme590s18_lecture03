@@ -1,11 +1,14 @@
 import glob
-import os      # for getting just the name of the file
+import os
 import re
 import json
 
 current_directory = './' # directory to search for files
 
 def main():
+    '''
+    reads in all student .csv files and processes them
+    '''
     filenames = collect_csv_files(current_directory)
     student_data = cat_data(filenames)
     write_csv(student_data)
@@ -17,7 +20,6 @@ def collect_csv_files(dir):
     gets all the csv files in ./$dir
     '''
     return glob.glob(dir + '*.csv')
-
 
 
 def get_file_contents(filename):
@@ -56,8 +58,8 @@ def cat_data(filenames):
             single_student_data = get_file_contents(fn)
             team_name = single_student_data.split(',')[-1].strip() # extract team name
             
-            # check if the team name is valid
-            if(not check_no_spaces(team_name)):
+            # check if the team name is valid (contains no spaces)
+            if(' ' in team_name.strip()):
                 print('Invalid Team Name: ' + team_name)
                 exit(0)
 
@@ -75,26 +77,20 @@ def cat_data(filenames):
     return student_data
 
 
-def check_no_spaces(string):
-    '''
-    returns True if @string has no spaces (internal)
-    '''
-    return ' ' not in string.strip()
-
-
 def is_camel_case(string):
     '''
     returns True if @string is in CamelCase
+    - checks if string contains:
+        - at least one lower-case letter
+        - at least one upper-case letter
+        - no underscores or spaces
     '''
-    # split the string at capital letters only
-    # regex derived from https://stackoverflow.com/questions/2277352/split-a-string-at-uppercase-letters
-    camel_humps = re.findall('[A-Z][^A-Z]*', string.strip())
-    for hump in camel_humps:
-        camel_case = hump[0].isupper() and hump[1:].islower()
-        if(not camel_case):
-            return False
-    return True
-
+    s = string.strip()
+    check_upper = any(c.islower() for c in s)
+    check_lower = any(c.isupper() for c in s)
+    check_underscores = '_' not in s
+    check_spaces = ' ' not in s
+    return check_upper and check_lower and check_underscores and check_spaces
 
 
 def write_csv(student_data):
